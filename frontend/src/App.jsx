@@ -1,35 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Web3Provider from "./Web3Provider";
+import RegisterUser from "./RegisterUser";
+import VerifySignature from "./VerifySignature";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [contract, setContract] = useState(null);
+  const [account, setAccount] = useState("");
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <h1>Blockchain Authentication</h1>
+
+      {/* Web3Provider will handle connection and load the contract */}
+      <Web3Provider setContract={setContract} setAccount={setAccount} />
+
+      {/* Only render RegisterUser and VerifySignature once contract and account are loaded */}
+      {contract && account && (
+        <>
+          <RegisterUser contract={contract} account={account} />
+          <VerifySignature contract={contract} account={account} />
+        </>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
