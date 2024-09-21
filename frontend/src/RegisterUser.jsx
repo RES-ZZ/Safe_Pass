@@ -1,55 +1,42 @@
 import React, { useState } from "react";
-import './RegisterUser.css'; // Add your CSS styles
+import { ethers } from "ethers"; // Import ethers for key generation
+import './RegisterUser.css'; // Add your styles
 
 function RegisterUser() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [publicKey, setPublicKey] = useState("");
+  const [privateKey, setPrivateKey] = useState("");
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-    // Registration logic here
-    console.log("Username:", username, "Email:", email, "Password:", password);
+  // Function to generate public/private key pair
+  const generateKeyPair = () => {
+    // Generate a random wallet (public/private key pair)
+    const wallet = ethers.Wallet.createRandom();
+    setPublicKey(wallet.address); // Public key (address)
+    setPrivateKey(wallet.privateKey); // Private key
   };
 
   return (
     <div className="register-page-container">
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <div className="form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+      <h2>Register User - Generate Public/Private Keys</h2>
+      <p>Click the button below to generate your key pair:</p>
+      <button onClick={generateKeyPair} className="generate-keys-btn">
+        Generate Keys
+      </button>
+
+      {publicKey && (
+        <div className="key-pair-container">
+          <div>
+            <strong>Public Key (Address):</strong>
+            <p>{publicKey}</p>
+          </div>
+          <div>
+            <strong>Private Key:</strong>
+            <p>{privateKey}</p>
+          </div>
         </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className="register-btn">Register</button>
-      </form>
+      )}
     </div>
   );
 }
 
 export default RegisterUser;
+
