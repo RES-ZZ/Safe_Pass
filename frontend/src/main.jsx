@@ -3,21 +3,26 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App.jsx";
 import Login from "./Login.jsx";
-import RegisterUser from "./RegisterUser.jsx"; // Import RegisterUser component
+import ConnectWallet from "./ConnectWallet.jsx"; // Import ConnectWallet component
 import './index.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* Default route for login */}
+        {/* Default route to the Login page */}
         <Route path="/" element={<Login />} />
-        {/* Route for registering the user */}
-        <Route path="/register" element={<RegisterUser />} />
-        {/* Route for the main app */}
+        {/* Route for the ConnectWallet component */}
+        <Route path="/connect-wallet" element={<ConnectWallet />} />
+        {/* Route for the main app after login */}
         <Route path="/app" element={<App />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
 );
+
+
+
+
+
 
