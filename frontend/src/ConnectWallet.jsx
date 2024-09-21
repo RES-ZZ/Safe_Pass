@@ -39,6 +39,25 @@ const contractABI = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "getMessageHash",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "user",
         type: "address",
@@ -77,6 +96,54 @@ const contractABI = [
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "_messageHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "validateSignature",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "validateSignatureWithMessage",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "user",
         type: "address",
@@ -94,7 +161,7 @@ const contractABI = [
     type: "function",
   },
 ];
-const contractAddress = "0x943F32fF4b2de17860632f471CA52B3176CeEbFe"; // Replace with actual contract address
+const contractAddress = "0x987904bE3875FD0034a257777a68D20C286F4801"; // Replace with actual contract address
 
 // Elliptic curve for key generation
 const EC = elliptic.ec;
@@ -215,32 +282,152 @@ const ConnectWallet = () => {
       alert("Contract or account not loaded.");
     }
   };
+  async function validateSignatureOnChain(message) {
+    if (!web3 || !contract || !account) {
+      console.log("Web3, contract, or account not loaded.");
+      return;
+    }
+
+    try {
+      // Step 1: Hash the message with the Ethereum prefix
+      const messageHash = web3.utils.sha3(
+        "\x19Ethereum Signed Message:\n" + message.length + message
+      );
+      console.log("Message Hash:", messageHash);
+
+      // Step 2: Sign the message using MetaMask
+      const signature = await web3.eth.personal.sign(message, account, "");
+      console.log("Signature:", signature);
+
+      // Step 3: Call the validateSignature function in your contract
+      const isValid = await contract.methods
+        .validateSignature(messageHash, signature)
+        .call();
+
+      if (isValid) {
+        console.log("Signature is valid!");
+        alert("Signature is valid!");
+      } else {
+        console.log("Signature is invalid!");
+        alert("Signature is invalid!");
+      }
+    } catch (error) {
+      console.error("Error validating signature on-chain:", error.message);
+    }
+  }
 
   return (
-    <div>
-      <button onClick={connectMetaMask}>Connect MetaMask Wallet</button>
-      {account && <p>Connected Account (Ethereum Address): {account}</p>}
+    <div className="bg-indigo-100 min-h-screen py-5">
+      <div className="container mx-auto px-4">
+        <div className="bg-white rounded-lg shadow-2xl p-8 max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold text-center text-indigo-800 mb-8">
+            Blockchain Authenticator
+          </h1>
 
-      {/* Generate Key Pair */}
-      <h2>Generate Public/Private Key Pair (32-byte Public Key)</h2>
-      <button onClick={generateKeyPair}>Generate Keys</button>
+          <div className="space-y-8">
+            {/* Connect Wallet Section */}
+            <div className="bg-indigo-50 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+                Connect Your Wallet
+              </h2>
+              <button
+                className="btn btn-primary bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                onClick={connectMetaMask}
+              >
+                Connect MetaMask
+              </button>
+              {account && (
+                <p className="mt-4 text-indigo-600">
+                  <strong>Connected Account:</strong>{" "}
+                  <span className="font-mono">{account}</span>
+                </p>
+              )}
+            </div>
 
-      {publicKeyX && (
-        <p>Generated Public Key (32-byte X-coordinate): 0x{publicKeyX}</p>
-      )}
-      {privateKey && <p>Generated Private Key: {privateKey}</p>}
+            {/* Generate Key Pair Section */}
+            <div className="bg-indigo-50 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+                Generate Key Pair
+              </h2>
+              <button
+                className="btn btn-secondary bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                onClick={generateKeyPair}
+              >
+                Generate Keys
+              </button>
+              {publicKeyX && (
+                <div className="mt-4 bg-white p-3 rounded-lg">
+                  <p className="text-indigo-600">
+                    <strong>Public Key (X-coordinate):</strong>
+                    <br />
+                    <span className="font-mono break-all">0x{publicKeyX}</span>
+                  </p>
+                </div>
+              )}
+              {privateKey && (
+                <div className="mt-2 bg-white p-3 rounded-lg">
+                  <p className="text-indigo-600">
+                    <strong>Private Key:</strong>
+                    <br />
+                    <span className="font-mono break-all">{privateKey}</span>
+                  </p>
+                </div>
+              )}
+            </div>
 
-      {/* Register Public Key on the blockchain */}
-      <h2>Register Public Key on Blockchain</h2>
-      <button onClick={registerPublicKeyOnChain}>Register Public Key</button>
-      <div>
-        <h2>View Registered Key</h2>
-        <button onClick={getRegisteredPublicKey}>View Key</button>
-      </div>
-      <div>
-        {/* Button to verify if the public key is registered */}
-        <h2>Verify Public Key</h2>
-        <button onClick={verifyPublicKey}>Verify Public Key</button>
+            {/* Register Public Key Section */}
+            <div className="bg-indigo-50 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+                Register Public Key
+              </h2>
+              <button
+                className="btn btn-success bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                onClick={registerPublicKeyOnChain}
+              >
+                Register Public Key
+              </button>
+            </div>
+
+            {/* View Registered Key Section */}
+            <div className="bg-indigo-50 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+                View Registered Key
+              </h2>
+              <button
+                className="btn btn-info bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                onClick={getRegisteredPublicKey}
+              >
+                View Registered Key
+              </button>
+            </div>
+
+            {/* Verify Public Key Section */}
+            <div className="bg-indigo-50 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+                Verify Public Key
+              </h2>
+              <button
+                className="btn btn-warning bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                onClick={verifyPublicKey}
+              >
+                Verify Public Key
+              </button>
+            </div>
+
+            {/* Validate Signature Section */}
+            <div className="bg-indigo-50 rounded-lg p-6">
+              <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+                Validate Signature
+              </h2>
+              <button
+                className="btn btn-danger bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                onClick={() => validateSignatureOnChain("My Message")}
+              >
+                Validate Signature
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
