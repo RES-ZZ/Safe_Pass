@@ -1,5 +1,6 @@
 import React from "react";
-import ConnectWallet from "./ConnectWallet"; // Import the ConnectWallet component
+import ConnectWallet from "./ConnectWallet"; // Import ConnectWallet for the main app
+import './App.css'; // Import the CSS
 
 function App() {
   return (
@@ -11,4 +12,5 @@ function App() {
 }
 
 export default App;
-test.
+
+
