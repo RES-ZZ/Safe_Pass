@@ -39,6 +39,25 @@ const contractABI = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "getMessageHash",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "user",
         type: "address",
@@ -77,6 +96,54 @@ const contractABI = [
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "_messageHash",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "validateSignature",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+      {
+        internalType: "bytes",
+        name: "_signature",
+        type: "bytes",
+      },
+    ],
+    name: "validateSignatureWithMessage",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "user",
         type: "address",
@@ -94,7 +161,8 @@ const contractABI = [
     type: "function",
   },
 ];
-const contractAddress = "0x943F32fF4b2de17860632f471CA52B3176CeEbFe"; // Replace with actual contract address
+const contractAddress = "0x987904bE3875FD0034a257777a68D20C286F4801"; // Replace with actual contract address
+ // Replace with actual contract address
 
 // Elliptic curve for key generation
 const EC = elliptic.ec;
@@ -106,6 +174,10 @@ const ConnectWallet = () => {
   const [publicKeyX, setPublicKeyX] = useState(""); // X-coordinate of the public key (32 bytes)
   const [privateKey, setPrivateKey] = useState(""); // Generated private key
   const [web3, setWeb3] = useState(null); // Web3 instance
+
+  // States for username and password
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   // Connect to MetaMask and initialize Web3
   const connectMetaMask = async () => {
@@ -182,6 +254,7 @@ const ConnectWallet = () => {
       );
     }
   };
+
   const getRegisteredPublicKey = async () => {
     if (contract && account) {
       try {
@@ -216,6 +289,49 @@ const ConnectWallet = () => {
     }
   };
 
+  // Handle form submission for username and password
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Username: ${username}, Password: ${password}`);
+    // Reset the fields after submission
+    setUsername("");
+    setPassword("");
+  };
+  async function validateSignatureOnChain(message) {
+    if (!web3 || !contract || !account) {
+      console.log("Web3, contract, or account not loaded.");
+      return;
+    }
+
+    try {
+      // Step 1: Hash the message with the Ethereum prefix
+      const messageHash = web3.utils.sha3(
+        "\x19Ethereum Signed Message:\n" + message.length + message
+      );
+      console.log("Message Hash:", messageHash);
+
+      // Step 2: Sign the message using MetaMask
+      const signature = await web3.eth.personal.sign(message, account, "");
+      console.log("Signature:", signature);
+
+      // Step 3: Call the validateSignature function in your contract
+      const isValid = await contract.methods
+        .validateSignature(messageHash, signature)
+        .call();
+
+      if (isValid) {
+        console.log("Signature is valid!");
+        alert("Signature is valid!");
+      } else {
+        console.log("Signature is invalid!");
+        alert("Signature is invalid!");
+      }
+    } catch (error) {
+      console.error("Error validating signature on-chain:", error.message);
+    }
+  }
+
+
   return (
     <div>
       <button onClick={connectMetaMask}>Connect MetaMask Wallet</button>
@@ -242,8 +358,42 @@ const ConnectWallet = () => {
         <h2>Verify Public Key</h2>
         <button onClick={verifyPublicKey}>Verify Public Key</button>
       </div>
+
+      {/* Username and Password Box */}
+      <div className="credentials-box">
+        <h3>Enter Credentials</h3>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Username:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+    
+        <h2>validateSignatureOnChain</h2>
+        <button onClick={() => validateSignatureOnChain("My Message")}>
+          Validate Signature
+        </button>
+      </div>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default ConnectWallet;
+
