@@ -1,19 +1,26 @@
-import React from "react";
-import ConnectWallet from "./ConnectWallet"; // Import ConnectWallet for the main app
-import './App.css'; // Import the CSS
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import Documentation from "./pages/Documentation";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Solution from "./pages/Solution";
+import Navigation from "./components/Navigation";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Blockchain Authentication App</h1>
-      <ConnectWallet /> {/* Render the ConnectWallet component */}
-    </div>
+    <Router>
+      <div className="App">
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/documentation" element={<Documentation />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/solution" element={<Solution />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
 export default App;
-
-
-
-
-
