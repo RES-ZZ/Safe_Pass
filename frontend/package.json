@@ -13,7 +13,11 @@
     "predeploy": "npm run build"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@metamask/detect-provider": "^2.0.0",
+    "@mui/icons-material": "^6.1.1",
+    "@mui/material": "^6.1.1",
     "autoprefixer": "^10.4.20",
     "elliptic": "^6.5.7",
     "ether": "^0.0.9",
