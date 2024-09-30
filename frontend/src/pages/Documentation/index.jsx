@@ -1,7 +1,12 @@
+import Sidebar from "../../components/Sidebar";
+import Content from "./Content";
+import "./documentation.css";
+
 const Documentation = () => {
   return (
-    <div>
-      <h1>Documentation</h1>
+    <div className="documentation-page">
+      <Sidebar />
+      <Content />
     </div>
   );
 };
