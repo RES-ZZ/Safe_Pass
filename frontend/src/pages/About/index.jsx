@@ -18,7 +18,7 @@ const About = () => {
   const [alertMessage, setAlertMessage] = useState(null);
 
   // Contract address from .env
-  const contractAddress = "0x5420491260D3FCA0bFA6aAe0360192E5d60a05f2";
+  const contractAddress = "0x3e81C65Aa6f5D8726981cFC3c81128f1059cA797";
 
   const connectMetaMask = async () => {
     if (window.ethereum && window.ethereum.isMetaMask) {

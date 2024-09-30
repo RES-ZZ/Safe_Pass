@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ethers } from "ethers"; // Import ethers for key generation
-import './RegisterUser.css'; // Add your styles
+import "./RegisterUser.css"; // Add your styles
 
 function RegisterUser() {
   const [publicKey, setPublicKey] = useState("");
@@ -38,4 +38,4 @@ function RegisterUser() {
   );
 }
 
-export default RegisterUser;
+export default RegisterUser;
