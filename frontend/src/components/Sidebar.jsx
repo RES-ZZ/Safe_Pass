@@ -21,9 +21,6 @@ const Sidebar = () => {
         <li>
           <Link to="#troubleshooting">Troubleshooting</Link>
         </li>
-        <li>
-          <Link to="#contact">Contact</Link>
-        </li>
       </ul>
     </div>
   );
