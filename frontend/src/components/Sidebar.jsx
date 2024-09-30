@@ -1,26 +1,29 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import "./Sidebar.css";
-
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleTechClick = () => {
+    navigate('/tech');
+  };
+
   return (
     <div className="sidebar bg-light p-4">
       <h3>Documentation</h3>
       <ul className="list-unstyled">
         <li>
-          <Link to="#quick-start">Quick Start</Link>
+          <button onClick={() => navigate('/quick-start')}>Quick Start</button>
         </li>
         <li>
-          <Link to="#installation">Installation</Link>
+          <button onClick={() => navigate('/installation')}>Installation</button>
         </li>
         <li>
-          <Link to="#usage">Usage</Link>
+          <button onClick={handleTechClick}>Tech</button>
         </li>
         <li>
-          <Link to="#faq">FAQ</Link>
+          <button onClick={() => navigate('/faq')}>FAQ</button>
         </li>
-        <li>
-          <Link to="#troubleshooting">Troubleshooting</Link>
-        </li>
+
       </ul>
     </div>
   );
