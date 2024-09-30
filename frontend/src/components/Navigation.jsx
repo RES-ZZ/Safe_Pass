@@ -32,6 +32,7 @@ const Navigation = () => {
   };
 
   return (
+<<<<<<< HEAD
     <ThemeProvider theme={theme}>
       <AppBar position="static" color="primary">
         <Toolbar sx={{ justifyContent: "center", gap: 2 }}>
@@ -130,6 +131,30 @@ const Navigation = () => {
         </Toolbar>
       </AppBar>
     </ThemeProvider>
+=======
+    <AppBar position="static">
+      <Toolbar>
+        <Button color="inherit" component={Link} to="/">
+          Home
+        </Button>
+        <Button color="inherit" component={Link} to="/documentation">
+          Documentation
+        </Button>
+        <Button color="inherit" component={Link} to="/about">
+          About
+        </Button>
+        <Button color="inherit" component={Link} to="/contact">
+          Contact
+        </Button>
+        <Button color="inherit" component={Link} to="/solution">
+          Solution
+        </Button>
+        <Button color="inherit" component={Link} to="/notcontact">
+          Test
+        </Button>
+      </Toolbar>
+    </AppBar>
+>>>>>>> 47e9237 (testing the new backend logic)
   );
 };
 

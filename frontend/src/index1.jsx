@@ -1,13 +1,20 @@
 import Web3 from "web3";
 import elliptic from "elliptic";
 import { useState } from "react";
-import { contractABI } from "../../contractABI";
-import { Button, Container, Row, Col, Card, Alert } from "react-bootstrap"; // Bootstrap for UI
-
+import { contractABI } from "./contractABI";
+import {
+  Button,
+  Container,
+  Row,
+  Col,
+  Card,
+  Alert,
+  Form,
+} from "react-bootstrap"; // Bootstrap for UI
 const EC = elliptic.ec;
 const ec = new EC("secp256k1"); // Same curve used by Ethereum
 
-const About = () => {
+const NotContact = () => {
   const [account, setAccount] = useState(null);
   const [contract, setContract] = useState(null);
   const [publicKeyX, setPublicKeyX] = useState("");
@@ -16,6 +23,10 @@ const About = () => {
   const [auditLogs, setAuditLogs] = useState([]);
   const [message, setMessage] = useState("");
   const [alertMessage, setAlertMessage] = useState(null);
+  const [orgAccount, setOrgAccount] = useState("");
+  const [requestMessage, setRequestMessage] = useState("");
+  const [requests, setRequests] = useState([]);
+  const [isApproved, setIsApproved] = useState(false);
 
   // Contract address from .env
   const contractAddress = "0x5420491260D3FCA0bFA6aAe0360192E5d60a05f2";
@@ -69,32 +80,38 @@ const About = () => {
       }
     }
   };
-  const registerPublicKeyWithOrganization = async () => {
-    if (!publicKeyX || !account) {
-      setAlertMessage("Please generate keys and connect your wallet first.");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/register-user-onchain", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ publicKey: "0x" + publicKeyX, account }),
-      });
-
-      if (response.ok) {
-        setAlertMessage(
-          "Registration request sent! Organization is processing it."
-        );
-      } else {
-        setAlertMessage("Error: Failed to send registration request.");
-      }
-    } catch (error) {
-      console.error("Error registering user:", error);
-      setAlertMessage("Error: Could not register user.");
+  const sendRequest = () => {
+    if (requestMessage && orgAccount) {
+      const newRequest = {
+        user: account,
+        message: requestMessage,
+        orgAccount: orgAccount,
+      };
+      setRequests([...requests, newRequest]);
+      setAlertMessage("Request sent successfully!");
+    } else {
+      setAlertMessage("Please fill in all fields.");
     }
   };
 
+  const approveRequest = async (request) => {
+    if (contract && publicKeyX && web3) {
+      try {
+        const publicKeyBytes32 = "0x" + publicKeyX.padStart(64, "0");
+        await contract.methods.registerUser(publicKeyBytes32).send({
+          from: request.orgAccount,
+          gas: 300000,
+          gasPrice: await web3.eth.getGasPrice(),
+        });
+        setRequests(requests.filter((req) => req !== request));
+        setIsApproved(true); // Set approval state to true
+        setAlertMessage("Request approved and public key registered!");
+      } catch (error) {
+        console.error("Error registering public key on-chain:", error.message);
+        setAlertMessage("Error: Failed to register public key.");
+      }
+    }
+  };
   const validateSignatureOffChain = async (message) => {
     if (!web3 || !contract || !account) return;
     try {
@@ -170,18 +187,68 @@ const About = () => {
 
         <Row className="mb-3">
           <Col>
-            <Button onClick={registerPublicKeyOnChain} className="w-100">
-              Register Public Key
+            <Form.Control
+              type="text"
+              placeholder="Organization Account"
+              value={orgAccount}
+              onChange={(e) => setOrgAccount(e.target.value)}
+            />
+          </Col>
+        </Row>
+
+        <Row className="mb-3">
+          <Col>
+            <Form.Control
+              type="text"
+              placeholder="Request Message"
+              value={requestMessage}
+              onChange={(e) => setRequestMessage(e.target.value)}
+            />
+          </Col>
+        </Row>
+
+        <Row className="mb-3">
+          <Col>
+            <Button onClick={sendRequest} className="w-100">
+              Send Request to Organization
             </Button>
           </Col>
         </Row>
+
         <Row className="mb-3">
           <Col>
-            <Button
-              onClick={registerPublicKeyWithOrganization}
-              className="w-100"
-            >
-              Register Public Key (Paid by Organization)
+            <h4>Organization Requests</h4>
+            {requests.length > 0 && (
+              <ul>
+                {requests.map((request, index) => (
+                  <li key={index}>
+                    User: {request.user}, Message: {request.message}, Public
+                    Key: 0x{request.publicKey}
+                    <Button onClick={() => approveRequest(request)}>
+                      Approve
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Col>
+        </Row>
+
+        {isApproved && (
+          <Row className="mb-3">
+            <Col>
+              <Alert variant="success">
+                Your request has been approved by the organization! You can now
+                validate your signature off-chain.
+              </Alert>
+            </Col>
+          </Row>
+        )}
+
+        <Row className="mb-3">
+          <Col>
+            <Button onClick={registerPublicKeyOnChain} className="w-100">
+              Register Public Key (User Pays)
             </Button>
           </Col>
         </Row>
@@ -253,4 +320,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default NotContact;

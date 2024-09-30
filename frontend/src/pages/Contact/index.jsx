@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import {
   TextField,
@@ -24,6 +25,9 @@ const theme = createTheme({
     },
   },
 });
+=======
+import React from "react";
+>>>>>>> 47e9237 (testing the new backend logic)
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -47,6 +51,7 @@ const Contact = () => {
   };
 
   return (
+<<<<<<< HEAD
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -117,6 +122,11 @@ const Contact = () => {
         </Box>
       </Container>
     </ThemeProvider>
+=======
+    <div>
+      <h1>Hello World</h1>
+    </div>
+>>>>>>> 47e9237 (testing the new backend logic)
   );
 };
 
