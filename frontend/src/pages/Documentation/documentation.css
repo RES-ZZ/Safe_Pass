@@ -1,0 +1,33 @@
+.documentation-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #f8f9fa;
+  position: fixed;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.content {
+  margin-left: 260px; /* Adjust this to fit sidebar */
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.content section {
+  margin-bottom: 50px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+}
