@@ -11,6 +11,8 @@ import Solution from "./pages/Solution";
 import Navigation from "./components/Navigation";
 import Quick from "./components/quick";
 import Tech from "./components/tech";
+import Installation from "./components/installation";
+import Faq from "./components/faq";
 function App() {
   return (
     <Router>
@@ -24,6 +26,9 @@ function App() {
           <Route path="/solution" element={<Solution />} />
           <Route path="/quick-start" element={<Quick />} />
           <Route path="/tech" element={<Tech/>}/>
+          <Route path="/installation" element={<Installation/>}/>
+          <Route path="/faq" element={<Faq/>}/>
+        
         </Routes>
       </div>
     </Router>
