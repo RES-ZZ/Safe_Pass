@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import Solution from "./pages/Solution";
 import Navigation from "./components/Navigation";
 import Quick from "./components/quick";
+import WhyUs from "./pages/whyUs/WhyUs";
 import Tech from "./components/tech";
 import Footer from "./components/Footer"; // Import the new Footer component
 
@@ -27,6 +28,7 @@ function App() {
             <Route path="/solution" element={<Solution />} />
             <Route path="/quick-start" element={<Quick />} />
             <Route path="/tech" element={<Tech />} />
+            <Route path="/why-us" element={<WhyUs/>}/>
           </Routes>
         </div>
         <Footer />

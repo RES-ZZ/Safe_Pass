@@ -1,5 +1,3 @@
-
-
 const Quick = () => {
     return (
       <div className="documentation-page">

@@ -85,6 +85,18 @@ const Navigation = () => {
           </Button>
           <Button
             color="inherit"
+            component={Link}
+            to="/why-us"
+            sx={{
+              "&:hover": {
+                backgroundColor: theme.palette.secondary.main, // Hover color
+              },
+            }}
+          >
+            Why us
+          </Button>
+          <Button
+            color="inherit"
             onClick={handleSolutionClick}
             aria-controls="solution-menu"
             aria-haspopup="true"
