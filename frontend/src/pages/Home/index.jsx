@@ -106,26 +106,26 @@ const TestimonialCard = styled(Card)(({ theme }) => ({
 const HomePage = () => {
   const performanceData = [
     { title: "Total Value Locked", value: "$10.5B" },
-    { title: "Transactions per Second", value: "65,000" },
-    { title: "Active Users", value: "1.2M" },
-    { title: "Total Transactions", value: "84B" },
+    { title: "Transactions speed", value: "Under 1 sec" },
+    { title: "Decentralised", value: "1.2M" },
+    { title: "Secure", value: "84B" },
   ];
 
   const testimonials = [
     {
-      name: "Alice Johnson",
+      name: "Vishnu",
       role: "DeFi Developer",
       quote:
         "The speed and scalability of this platform have revolutionized our DApp development process.",
     },
     {
-      name: "Bob Smith",
+      name: "Ram Kumar",
       role: "Crypto Investor",
       quote:
         "I've never seen such low transaction fees coupled with lightning-fast confirmations. It's a game-changer.",
     },
     {
-      name: "Carol Williams",
+      name: "Dinesh",
       role: "NFT Artist",
       quote:
         "The vibrant community and robust infrastructure make this the perfect home for my digital art collections.",

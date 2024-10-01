@@ -120,11 +120,19 @@ const Navigation = () => {
             </MenuItem>
             <MenuItem
               component={Link}
-              to="/connect-wallet"
+              to="/admin"
               onClick={handleClose}
               role="menuitem"
             >
-              Full Option Roll On
+              Admin
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/register"
+              onClick={handleClose}
+              role="menuitem"
+            >
+              Register
             </MenuItem>
           </Menu>
         </Toolbar>

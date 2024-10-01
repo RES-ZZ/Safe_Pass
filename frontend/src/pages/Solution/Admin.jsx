@@ -2,23 +2,32 @@ import { useState, useEffect } from "react";
 import Web3 from "web3";
 import elliptic from "elliptic";
 import {
-  Button,
   Container,
-  Row,
-  Col,
+  Typography,
+  Box,
+  Button,
+  TextField,
   Card,
+  CardContent,
+  CardHeader,
+  Grid,
   Alert,
-  Spinner,
-  Form,
-  Badge,
-} from "react-bootstrap";
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Divider,
+} from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 import { contractABI } from "../../contractABI"; // Ensure this path is correct
 
 const EC = elliptic.ec;
 const ec = new EC("secp256k1"); // Same curve used by Ethereum
 
-const Demo = () => {
+const AdminPage = () => {
   // State Variables
   const [userWeb3, setUserWeb3] = useState(null);
   const [adminWeb3, setAdminWeb3] = useState(null);
@@ -31,6 +40,20 @@ const Demo = () => {
   const [message, setMessage] = useState("");
   const [alertMessage, setAlertMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [validationUsername, setValidationUsername] = useState("");
+  const [validationPassword, setValidationPassword] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const darkTheme = createTheme({
+    palette: {
+      mode: "dark",
+      primary: {
+        main: "#90caf9",
+      },
+      secondary: {
+        main: "#f48fb1",
+      },
+    },
+  });
 
   // Network Configuration
   const CELO_ALFAJORES_CONFIG = {
@@ -401,217 +424,260 @@ const Demo = () => {
   };
 
   return (
-    <Container
-      fluid
-      className="bg-dark text-light py-5"
-      style={{ minHeight: "100vh" }}
-    >
-      <Row className="justify-content-center">
-        <Col md={10}>
-          <Card bg="secondary" text="white" className="shadow-lg">
-            <Card.Header className="bg-dark text-center py-3">
-              <h2 className="mb-0">🔐 Blockchain Authenticator Demo</h2>
-            </Card.Header>
-            <Card.Body className="px-4 py-5">
-              {alertMessage && (
-                <Alert variant="info" className="text-dark">
-                  {alertMessage}
-                </Alert>
-              )}
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <Container maxWidth="lg">
+        <Box sx={{ my: 4 }}>
+          <Typography variant="h3" component="h1" align="center" gutterBottom>
+            🔐 Blockchain Authenticator Demo
+          </Typography>
 
-              <Row>
-                {/* User Panel */}
-                <Col md={6} className="mb-4 mb-md-0">
-                  <Card bg="dark" text="light" className="h-100">
-                    <Card.Header className="bg-primary text-dark">
-                      <h4 className="mb-0">👤 User Panel (Coinbase Wallet)</h4>
-                    </Card.Header>
-                    <Card.Body>
-                      <Form.Group className="mb-3" controlId="formUsername">
-                        <Form.Label>Username</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Enter username"
-                          value={username}
-                          onChange={(e) => setUsername(e.target.value)}
-                        />
-                      </Form.Group>
+          {alertMessage && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {alertMessage}
+            </Alert>
+          )}
 
-                      <Button
-                        variant="outline-info"
-                        onClick={connectUserCoinbaseWallet}
-                        className="w-100 mb-3"
-                      >
-                        🔗 Connect Coinbase Wallet
-                      </Button>
-                      {userAccount && (
-                        <Alert variant="success" className="mb-3">
-                          Connected Account: {userAccount}
-                        </Alert>
-                      )}
-
-                      <Button
-                        variant="outline-warning"
-                        onClick={generateKeyPair}
-                        className="w-100 mb-3"
-                      >
-                        🔑 Generate Key Pair
-                      </Button>
-                      {publicKeyX && (
-                        <Alert variant="warning" className="mb-3">
-                          <strong>Public Key:</strong>{" "}
-                          <small className="text-break">0x{publicKeyX}</small>
-                        </Alert>
-                      )}
-
-                      <Button
-                        variant="primary"
-                        onClick={submitRegistrationRequest}
-                        className="w-100 mb-3"
-                        disabled={
-                          !publicKeyX || !userAccount || !username || loading
-                        }
-                      >
-                        {loading ? (
-                          <Spinner animation="border" size="sm" />
-                        ) : (
-                          "📝 Register Public Key"
-                        )}
-                      </Button>
-
-                      <Form.Group className="mb-3" controlId="formMessage">
-                        <Form.Label>Message for Validation</Form.Label>
-                        <Form.Control
-                          type="text"
-                          placeholder="Enter message to validate"
-                          value={message}
-                          onChange={(e) => setMessage(e.target.value)}
-                        />
-                      </Form.Group>
-
-                      <Button
-                        variant="outline-success"
-                        onClick={() => validateSignatureOffChain(message)}
-                        className="w-100 mb-3"
-                        disabled={loading || !message}
-                      >
-                        {loading ? (
-                          <Spinner animation="border" size="sm" />
-                        ) : (
-                          "✅ Validate Signature (Off-Chain)"
-                        )}
-                      </Button>
-
-                      <Button
-                        variant="outline-light"
-                        onClick={getAuditLogs}
-                        className="w-100 mb-3"
-                      >
-                        📋 Get Audit Logs
-                      </Button>
-                      {auditLogs.length > 0 && (
-                        <Card bg="dark" border="info" className="mt-3">
-                          <Card.Header>Audit Logs</Card.Header>
-                          <Card.Body>
-                            <ul className="list-unstyled">
-                              {auditLogs.map((log, index) => (
-                                <li key={index} className="mb-2">
-                                  <strong>User:</strong> {log.returnValues.user}
-                                  <br />
-                                  <strong>Public Key:</strong>{" "}
-                                  <small className="text-break">
-                                    {log.returnValues.publicKey}
-                                  </small>
-                                </li>
-                              ))}
-                            </ul>
-                          </Card.Body>
-                        </Card>
-                      )}
-                    </Card.Body>
-                  </Card>
-                </Col>
-
-                {/* Admin Panel */}
-                <Col md={6}>
-                  <Card bg="dark" text="light" className="h-100">
-                    <Card.Header className="bg-success text-white">
-                      <h4 className="mb-0">🛡️ Admin Panel (MetaMask)</h4>
-                    </Card.Header>
-                    <Card.Body>
-                      <Button
-                        variant="outline-success"
-                        onClick={connectAdminMetaMask}
-                        className="w-100 mb-3"
-                      >
-                        🔗 Connect MetaMask
-                      </Button>
-                      {adminAccount && (
-                        <Alert variant="success" className="mb-3">
-                          Admin Account: {adminAccount}
-                        </Alert>
-                      )}
-
-                      <h5 className="mt-4 mb-3">Registration Requests</h5>
-                      {adminRequests.length === 0 ? (
-                        <Alert variant="info">No pending requests.</Alert>
-                      ) : (
-                        adminRequests.map((request, index) => (
-                          <Card
-                            key={index}
-                            bg="secondary"
-                            text="white"
-                            className="mb-3"
-                          >
-                            <Card.Body>
-                              <Card.Title>{request.username}</Card.Title>
-                              <Card.Text>
-                                <strong>Public Key:</strong>{" "}
-                                <small className="text-break">
-                                  {request.publicKey}
-                                </small>
-                              </Card.Text>
-                              <Card.Text>
-                                <strong>User Address:</strong>{" "}
-                                {request.userAddress}
-                              </Card.Text>
-                              {request.approved ? (
-                                <Badge bg="success" className="px-3 py-2">
-                                  Approved
-                                </Badge>
-                              ) : (
-                                <Button
-                                  variant="success"
-                                  onClick={() =>
-                                    approveRegistration(
-                                      index,
-                                      request.userAddress,
-                                      request.publicKey
-                                    )
-                                  }
-                                  disabled={loading}
-                                >
-                                  {loading ? (
-                                    <Spinner animation="border" size="sm" />
-                                  ) : (
-                                    "Approve"
-                                  )}
-                                </Button>
-                              )}
-                            </Card.Body>
-                          </Card>
-                        ))
-                      )}
-                    </Card.Body>
-                  </Card>
-                </Col>
-              </Row>
-            </Card.Body>
+          {/* Part 1: User Registration */}
+          <Card sx={{ mb: 4 }}>
+            <CardHeader
+              title="👤 User Registration (Coinbase Wallet)"
+              sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}
+            />
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Username"
+                    variant="outlined"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={connectUserCoinbaseWallet}
+                  >
+                    🔗 Connect Coinbase Wallet
+                  </Button>
+                </Grid>
+                {userAccount && (
+                  <Grid item xs={12}>
+                    <Alert severity="success">
+                      Connected Account: {userAccount}
+                    </Alert>
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={generateKeyPair}
+                  >
+                    🔑 Generate Key Pair
+                  </Button>
+                </Grid>
+                {publicKeyX && (
+                  <Grid item xs={12}>
+                    <Alert severity="warning">
+                      <strong>Public Key:</strong>{" "}
+                      <span style={{ wordBreak: "break-all" }}>
+                        0x{publicKeyX}
+                      </span>
+                    </Alert>
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={submitRegistrationRequest}
+                    disabled={
+                      !publicKeyX || !userAccount || !username || loading
+                    }
+                  >
+                    {loading ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      "📝 Register Public Key"
+                    )}
+                  </Button>
+                </Grid>
+              </Grid>
+            </CardContent>
           </Card>
-        </Col>
-      </Row>
-    </Container>
+
+          {/* Part 2: Validation */}
+          <Card sx={{ mb: 4 }}>
+            <CardHeader
+              title="✅ User Validation"
+              sx={{
+                bgcolor: "secondary.main",
+                color: "secondary.contrastText",
+              }}
+            />
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Username"
+                    variant="outlined"
+                    value={validationUsername}
+                    onChange={(e) => setValidationUsername(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    variant="outlined"
+                    value={validationPassword}
+                    onChange={(e) => setValidationPassword(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Message for Validation"
+                    variant="outlined"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={() => validateSignatureOffChain(message)}
+                    disabled={loading || !message}
+                  >
+                    {loading ? (
+                      <CircularProgress size={24} />
+                    ) : (
+                      "Validate Signature"
+                    )}
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    onClick={getAuditLogs}
+                  >
+                    📋 Get Audit Logs
+                  </Button>
+                </Grid>
+                {auditLogs.length > 0 && (
+                  <Grid item xs={12}>
+                    <Paper elevation={2} sx={{ p: 2 }}>
+                      <Typography variant="h6">Audit Logs</Typography>
+                      <List>
+                        {auditLogs.map((log, index) => (
+                          <ListItem key={index}>
+                            <ListItemText
+                              primary={`User: ${log.returnValues.user}`}
+                              secondary={`Public Key: ${log.returnValues.publicKey}`}
+                            />
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Paper>
+                  </Grid>
+                )}
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Admin Panel */}
+          <Card>
+            <CardHeader
+              title="🛡️ Admin Panel (MetaMask)"
+              sx={{ bgcolor: "success.main", color: "success.contrastText" }}
+            />
+            <CardContent>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={connectAdminMetaMask}
+                  >
+                    🔗 Connect MetaMask
+                  </Button>
+                </Grid>
+                {adminAccount && (
+                  <Grid item xs={12}>
+                    <Alert severity="success">
+                      Admin Account: {adminAccount}
+                    </Alert>
+                  </Grid>
+                )}
+                <Grid item xs={12}>
+                  <Typography variant="h5" gutterBottom>
+                    Registration Requests
+                  </Typography>
+                  {adminRequests.length === 0 ? (
+                    <Alert severity="info">No pending requests.</Alert>
+                  ) : (
+                    adminRequests.map((request, index) => (
+                      <Paper key={index} elevation={2} sx={{ p: 2, mb: 2 }}>
+                        <Typography variant="h6">{request.username}</Typography>
+                        <Typography variant="body2" gutterBottom>
+                          <strong>Public Key:</strong>{" "}
+                          <span style={{ wordBreak: "break-all" }}>
+                            {request.publicKey}
+                          </span>
+                        </Typography>
+                        <Typography variant="body2" gutterBottom>
+                          <strong>User Address:</strong> {request.userAddress}
+                        </Typography>
+                        {request.approved ? (
+                          <Alert severity="success" sx={{ mt: 1 }}>
+                            Approved
+                          </Alert>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="success"
+                            onClick={() =>
+                              approveRegistration(
+                                index,
+                                request.userAddress,
+                                request.publicKey
+                              )
+                            }
+                            disabled={loading}
+                            sx={{ mt: 1 }}
+                          >
+                            {loading ? (
+                              <CircularProgress size={24} />
+                            ) : (
+                              "Approve"
+                            )}
+                          </Button>
+                        )}
+                      </Paper>
+                    ))
+                  )}
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Box>
+      </Container>
+    </ThemeProvider>
   );
 };
 
-export default Demo;
+export default AdminPage;

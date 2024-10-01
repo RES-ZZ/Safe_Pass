@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Documentation from "./pages/Documentation";
-import About from "./pages/About";
+import About from "./pages/About/index";
 import Contact from "./pages/Contact";
 import Solution from "./pages/Solution";
 import Navigation from "./components/Navigation";
@@ -11,6 +11,8 @@ import Quick from "./components/quick";
 import Tech from "./components/tech";
 import Footer from "./components/Footer"; // Import the new Footer component
 import ConnectWallet from "./pages/Solution/ConnectWallet";
+import RegistrationPage from "./pages/Solution/Register";
+import AdminPage from "./pages/Solution/Admin";
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
             <Route path="/tech" element={<Tech />} />
             <Route path="/demo" element={<Demo />} />
             <Route path="/connect-wallet" element={<ConnectWallet />} />
+            <Route path="/register" element={<RegistrationPage />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </div>
         <Footer />
