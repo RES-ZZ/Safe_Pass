@@ -37,7 +37,7 @@ const Content = () => {
 
 <p>4. No Real-Time Monitoring: OTPs lack real-time threat detection and response capabilities.</p>
 
-<p>5. Inadequate for Complex Networks: OTPs don't provide the granular control needed in complex environments.</p>
+<p>5. Inadequate for Complex Networks: OTPs dont provide the granular control needed in complex environments.</p>
         {/* More details */}
       </section>
 

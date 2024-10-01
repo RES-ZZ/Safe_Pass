@@ -9,7 +9,9 @@ import Navigation from "./components/Navigation";
 import Quick from "./components/quick";
 import Tech from "./components/tech";
 import Footer from "./components/Footer"; // Import the new Footer component
-
+import Faq from "./components/faq";
+import Troubleshoot from "./components/troubleshoot";
+import InstallationPage from "./components/installation";
 function App() {
   return (
     <Router>
@@ -25,8 +27,11 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/solution" element={<Solution />} />
-            <Route path="/quick-start" element={<Quick />} />
+            <Route path="/quick" element={<Quick />} />
             <Route path="/tech" element={<Tech />} />
+            <Route path="/faq" element={<Faq/>}/>
+            <Route path="/troubleshoot" element={<Troubleshoot/>}/>
+            <Route path="/installation" element={<InstallationPage/>}/>         
           </Routes>
         </div>
         <Footer />

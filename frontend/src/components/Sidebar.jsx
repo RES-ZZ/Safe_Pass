@@ -24,7 +24,7 @@ const Sidebar = () => {
           <button onClick={() => navigate('/faq')}>FAQ</button>
         </li>
         <li>
-          <button onClick={() => navigate('/troubleshooting')}>Troubleshooting</button>
+          <button onClick={() => navigate('/troubleshoot')}>Troubleshooting</button>
         </li>
       </ul>
     </div>
