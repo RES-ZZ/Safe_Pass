@@ -13,6 +13,7 @@
     "predeploy": "npm run build"
   },
   "dependencies": {
+    "@coinbase/wallet-sdk": "^4.1.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@metamask/detect-provider": "^2.0.0",
