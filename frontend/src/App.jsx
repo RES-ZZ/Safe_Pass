@@ -6,9 +6,11 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Solution from "./pages/Solution";
 import Navigation from "./components/Navigation";
+import Demo from "./pages/Solution/demo";
 import Quick from "./components/quick";
 import Tech from "./components/tech";
 import Footer from "./components/Footer"; // Import the new Footer component
+import ConnectWallet from "./pages/Solution/ConnectWallet";
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
             <Route path="/solution" element={<Solution />} />
             <Route path="/quick-start" element={<Quick />} />
             <Route path="/tech" element={<Tech />} />
+            <Route path="/demo" element={<Demo />} />
+            <Route path="/connect-wallet" element={<ConnectWallet />} />
           </Routes>
         </div>
         <Footer />
