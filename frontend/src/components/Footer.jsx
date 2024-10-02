@@ -121,16 +121,14 @@ const Footer = () => {
               variant="body2"
               style={{ marginTop: "16px", color: "#808080" }}
             >
-              © 2024 Solana Foundation. All rights reserved.
+              © 2024 Foundation. All rights reserved.
             </Typography>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Typography variant="h6" gutterBottom>
-              SOLANA
-            </Typography>
+            <Typography variant="h6" gutterBottom></Typography>
             <Box display="flex" flexDirection="column">
               <FooterLink href="#">Grants</FooterLink>
-              <FooterLink href="#">Break Solana</FooterLink>
+              <FooterLink href="#">Break </FooterLink>
               <FooterLink href="#">Media Kit</FooterLink>
               <FooterLink href="#">Careers</FooterLink>
               <FooterLink href="#">Disclaimer</FooterLink>

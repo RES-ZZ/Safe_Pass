@@ -66,10 +66,12 @@ const AdminPage = () => {
 
   // Contract Address (Replace with your deployed contract address)
   const contractAddress = "0x25fAa6922F27B6eAb3E26E864225Bf1d0F8983A9";
+  console.log("hello :" + import.meta.env.VITE_TEST_VARIABLE); // Should output "Hello World"
 
   // Contract Instances
   const [userContract, setUserContract] = useState(null);
   const [adminContract, setAdminContract] = useState(null);
+  console.log("Contract Address:", import.meta.env.VITE_CONTRACT_ADDRESS);
 
   // Initialize Contract Instances
   useEffect(() => {
@@ -546,7 +548,7 @@ const AdminPage = () => {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
-                    label="Message for Validation"
+                    label="3rd Factor Authentication "
                     variant="outlined"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

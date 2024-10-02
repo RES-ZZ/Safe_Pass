@@ -105,9 +105,9 @@ const TestimonialCard = styled(Card)(({ theme }) => ({
 
 const HomePage = () => {
   const performanceData = [
-    { title: "Total Value Locked", value: "$10.5B" },
+    { title: "Scalabale,Immutable", value: "200%" },
     { title: "Transactions speed", value: "Under 1 sec" },
-    { title: "Decentralised", value: "1.2M" },
+    { title: "Decentralised", value: "200%" },
     { title: "Secure", value: "84B" },
   ];
 

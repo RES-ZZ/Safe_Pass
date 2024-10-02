@@ -35,7 +35,7 @@ const About = () => {
   const [password, setPassword] = useState("");
 
   // Replace with your deployed contract address
-  const contractAddress = "0x71110c8e6bad31432E1dCEF1AD0e7e46F88F868B";
+  const contractAddress = "";
   const contractABI = [
     {
       anonymous: false,
