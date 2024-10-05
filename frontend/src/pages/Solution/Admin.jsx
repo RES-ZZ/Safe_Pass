@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
+import { Buffer } from "buffer";
 import elliptic from "elliptic";
 import {
   Container,

@@ -134,6 +134,30 @@ const Navigation = () => {
             >
               Register
             </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/file-viewer"
+              onClick={handleClose}
+              role="menuitem"
+            >
+              Message Viewer
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/file-uploader"
+              onClick={handleClose}
+              role="menuitem"
+            >
+              Message Sender
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/chat"
+              onClick={handleClose}
+              role="menuitem"
+            >
+              Chat
+            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
