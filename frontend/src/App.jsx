@@ -13,7 +13,7 @@ import Footer from "./components/Footer"; // Import the new Footer component
 import ConnectWallet from "./pages/Solution/ConnectWallet";
 import RegistrationPage from "./pages/Solution/Register";
 import AdminPage from "./pages/Solution/Admin";
-
+import User from "./pages/Solution/User1";
 function App() {
   return (
     <Router>
@@ -32,9 +32,11 @@ function App() {
             <Route path="/quick-start" element={<Quick />} />
             <Route path="/tech" element={<Tech />} />
             <Route path="/demo" element={<Demo />} />
+          
             <Route path="/connect-wallet" element={<ConnectWallet />} />
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/user" element={<User />} /> {/* Add the User route */}
           </Routes>
         </div>
         <Footer />

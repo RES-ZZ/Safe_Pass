@@ -37,7 +37,7 @@ const darkTheme = createTheme({
       fontSize: "2rem",
       fontWeight: 600,
     },
-  },
+  },  
 });
 
 // Keyframes for star twinkling
@@ -65,7 +65,7 @@ const PageWrapper = styled(Box)(({ theme }) => ({
   },
 }));
 
-const StarField = styled(Box)({
+const StarField = styled(Box)( {
   position: "absolute",
   top: 0,
   left: 0,
@@ -84,31 +84,101 @@ const Star = styled("div")(({ size, top, left, duration }) => ({
   animation: `${twinkle} ${duration}s infinite`,
 }));
 
-const ContentWrapper = styled(Box)({
+const ContentWrapper = styled(Box)( {
   position: "relative",
   zIndex: 1,
 });
 
 const GlowingCard = styled(Card)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  transition: "all 0.3s ease-in-out",
-  "&:hover": {
-    boxShadow: `0 0 20px ${theme.palette.primary.main}`,
-    transform: "translateY(-5px)",
+  padding: '30px',
+  borderRadius: '15px',
+  backgroundColor: '#000000',
+  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+  transition: 'transform 0.2s ease',
+  '&:hover': {
+    transform: 'translateY(-10px)',
+  },
+  '&.fast': {
+    borderLeft: '15px solid #a5a5ff',
+  },
+  '&.decentralized': {
+    borderLeft: '15px solid #ff7f7f',
+  },
+  '&.scalable': {
+    borderLeft: '15px solid #a5ffb1',
+  },
+  '&.energy-efficient': {
+    borderLeft: '15px solid #ffd500',
   },
 }));
 
-const TestimonialCard = styled(Card)(({ theme }) => ({
+const TestimonialCard = styled(GlowingCard)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   height: "100%",
 }));
 
-const HomePage = () => {
+const HeaderWrapper = styled(Box)( {
+  paddingTop: "100px",
+  paddingBottom: "50px",
+  textAlign: "center",
+});
+
+const CTAButtons = styled(Box)( {
+  display: "flex",
+  justifyContent: "center",
+  gap: "20px",
+  marginTop: "40px",
+});
+
+const CTAButton = styled(Button)(({ theme }) => ({
+  padding: "15px 30px",
+  fontWeight: "bold",
+  borderRadius: "30px",
+  textTransform: "uppercase",
+  background: "linear-gradient(90deg, #7f3fe4, #b45de8)",
+  "&:hover": {
+    background: theme.palette.primary.main,
+  },
+}));
+
+const OutlineButton = styled(Button)(({ theme }) => ({
+  padding: "15px 30px",
+  fontWeight: "bold",
+  borderRadius: "30px",
+  textTransform: "uppercase",
+  backgroundColor: "transparent",
+  border: "2px solid white",
+  color: "white",
+  "&:hover": {
+    borderColor: theme.palette.primary.main,
+  },
+}));
+
+const Home = () => {
   const performanceData = [
-    { title: "Scalabale,Immutable", value: "200%" },
-    { title: "Transactions speed", value: "Under 1 sec" },
-    { title: "Decentralised", value: "200%" },
-    { title: "Secure", value: "84B" },
+    {
+      title: "Scalable, Immutable",
+      value: "200%",
+
+    },
+    {
+      title: "Transaction speed",
+      value: "Under 1 sec",
+      className: "fast",
+    
+    },
+    {
+      title: "Decentralized",
+      value: "200%",
+      className: "decentralized",
+      
+    },
+    {
+      title: "Secure",
+      value: "84B",
+      className: "energy-efficient",
+      
+    },
   ];
 
   const testimonials = [
@@ -150,34 +220,38 @@ const HomePage = () => {
         </StarField>
         <ContentWrapper>
           <Container maxWidth="lg">
-            <Box sx={{ pt: 15, pb: 8, textAlign: "center" }}>
+            <HeaderWrapper>
               <Typography variant="h1" gutterBottom>
-                Welcome to the Future of Web3
+                Welcome to the future of the web3
               </Typography>
               <Typography variant="h5" paragraph>
-                Experience lightning-fast transactions, unparalleled security,
-                and limitless scalability.
+                Experience lightning-fast transactions, unparalleled security, and limitless scalability.
               </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                sx={{ mt: 2 }}
-              >
-                Get Started
-              </Button>
-            </Box>
+              <CTAButtons>
+                <CTAButton variant="contained" color="primary">
+                  Start Building
+                </CTAButton>
+                <OutlineButton variant="outlined" color="inherit">
+                  Resources
+                </OutlineButton>
+              </CTAButtons>
+            </HeaderWrapper>
 
             <Box sx={{ mb: 8 }}>
               <Typography variant="h2" gutterBottom align="center">
                 Performance Metrics
               </Typography>
-              <Grid container spacing={4} sx={{ mt: 4 }}>
+              <Grid container spacing={4} sx={{ mt: 4 }} className="cards-container">
                 {performanceData.map((item, index) => (
                   <Grid item xs={12} sm={6} md={3} key={index}>
-                    <GlowingCard>
+                    <GlowingCard className={`card ${item.className}`}>
                       <CardContent>
-                        <Typography variant="h3" color="primary">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          style={{ width: '100%', height: 'auto', marginBottom: '15px', borderRadius: '8px' }}
+                        />
+                        <Typography variant="h3" color="primary" className="metric">
                           {item.value}
                         </Typography>
                         <Typography variant="subtitle1">
@@ -221,4 +295,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default Home;

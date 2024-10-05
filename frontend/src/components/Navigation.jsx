@@ -134,6 +134,14 @@ const Navigation = () => {
             >
               Register
             </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/user"
+              onClick={handleClose}
+              role="menuitem"
+            >
+              User
+            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>

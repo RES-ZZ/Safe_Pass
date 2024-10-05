@@ -42,7 +42,7 @@ const Demo = () => {
   };
 
   // Contract Address (Replace with your deployed contract address)
-  const contractAddress = "0x25fAa6922F27B6eAb3E26E864225Bf1d0F8983A9";
+  // const contractAddress = "0x25fAa6922F27B6eAb3E26E864225Bf1d0F8983A9";
 
   // Contract Instances
   const [userContract, setUserContract] = useState(null);
