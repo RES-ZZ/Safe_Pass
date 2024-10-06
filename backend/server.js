@@ -1,66 +1,78 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const Web3 = require('web3');
-const dotenv = require('dotenv');
-const fs = require('fs');
-const path = require('path');
+// server.js
 
-dotenv.config();
+const express = require('express');
+const bcrypt = require('bcrypt');
+const bodyParser = require('body-parser');
 
 const app = express();
-const port = process.env.PORT || 3000;
-
 app.use(bodyParser.json());
 
-// Initialize Web3
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`));
+// Mock user database
+const users = {};
 
-// Read ABI
-const contractABI = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'contractABI.json'), 'utf-8'));
-const contract = new web3.eth.Contract(contractABI, process.env.CONTRACT_ADDRESS);
+// Route to register a new user (for demonstration purposes)
+app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
 
-// Organization account
-const organizationAccount = web3.eth.accounts.privateKeyToAccount(process.env.ORGANIZATION_PRIVATE_KEY);
-web3.eth.accounts.wallet.add(organizationAccount);
-web3.eth.defaultAccount = organizationAccount.address;
-
-// Endpoint to register user
-app.post('/api/register-user-onchain', async (req, res) => {
-    const { publicKey, userAddress } = req.body;
-
-    if (!publicKey || !userAddress) {
-        return res.status(400).json({ error: 'Public key and user address are required.' });
+    if (users[username]) {
+        return res.status(400).send('User already exists');
     }
 
-    try {
-        // Prepare the transaction
-        const tx = contract.methods.registerUser(userAddress, publicKey);
-        const gas = await tx.estimateGas({ from: process.env.ORGANIZATION_ADDRESS });
-        const gasPrice = await web3.eth.getGasPrice();
+    const hashedPassword = await bcrypt.hash(password, 10);
+    users[username] = {
+        password: hashedPassword,
+        pin: null, // To be set later
+        twoFA: false, // Assume 2FA is already set up
+    };
 
-        const data = tx.encodeABI();
+    res.send('User registered successfully');
+});
 
-        const txData = {
-            from: process.env.ORGANIZATION_ADDRESS,
-            to: process.env.CONTRACT_ADDRESS,
-            data: data,
-            gas,
-            gasPrice
-        };
+// Route to set up the PIN
+app.post('/set-pin', async (req, res) => {
+    const { username, pin } = req.body;
 
-        // Sign and send the transaction
-        const receipt = await web3.eth.sendTransaction(txData);
-
-        console.log('Transaction receipt:', receipt);
-
-        res.status(200).json({ message: 'User registered successfully on-chain.', transactionHash: receipt.transactionHash });
-    } catch (error) {
-        console.error('Error registering user on-chain:', error);
-        res.status(500).json({ error: 'Failed to register user on-chain.' });
+    if (!users[username]) {
+        return res.status(400).send('User not found');
     }
+
+    if (!pin || pin.length < 4 || pin.length > 8 || !/^\d+$/.test(pin)) {
+        return res.status(400).send('PIN must be 4-8 digits');
+    }
+
+    const hashedPin = await bcrypt.hash(pin, 10);
+    users[username].pin = hashedPin;
+
+    res.send('PIN set successfully');
+});
+
+// Route to authenticate with 3FA (assuming 2FA is already handled)
+app.post('/authenticate', async (req, res) => {
+    const { username, password, pin } = req.body;
+
+    const user = users[username];
+    if (!user) {
+        return res.status(400).send('Invalid username or password');
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+        return res.status(400).send('Invalid username or password');
+    }
+
+    if (!user.pin) {
+        return res.status(400).send('PIN not set for this user');
+    }
+
+    const pinMatch = await bcrypt.compare(pin, user.pin);
+    if (!pinMatch) {
+        return res.status(400).send('Invalid PIN');
+    }
+
+    res.send('Authentication successful');
 });
 
 // Start the server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
 });

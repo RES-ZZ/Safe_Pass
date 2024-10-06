@@ -10,11 +10,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@simplewebauthn/server": "^10.0.1",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "punycode": "^2.3.1",
+    "punycode.js": "^2.3.1",
     "react-bootstrap": "^2.10.5",
+    "uuid": "^10.0.0",
     "web3": "^4.13.0"
   }
 }

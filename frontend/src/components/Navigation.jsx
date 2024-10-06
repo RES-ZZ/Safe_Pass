@@ -144,11 +144,11 @@ const Navigation = () => {
             </MenuItem>
             <MenuItem
               component={Link}
-              to="/file-uploader"
+              to="/user"
               onClick={handleClose}
               role="menuitem"
             >
-              Message Sender
+              User
             </MenuItem>
             <MenuItem
               component={Link}
@@ -157,6 +157,14 @@ const Navigation = () => {
               role="menuitem"
             >
               Chat
+            </MenuItem>
+            <MenuItem
+              component={Link}
+              to="/three-fa"
+              onClick={handleClose}
+              role="menuitem"
+            >
+              Three Factor
             </MenuItem>
           </Menu>
         </Toolbar>

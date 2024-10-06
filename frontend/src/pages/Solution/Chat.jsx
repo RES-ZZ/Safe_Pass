@@ -1,6 +1,6 @@
 // src/pages/Solution/Chat.jsx
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { ethers } from "ethers";
 import { Button, Form, Alert, ListGroup, Spinner } from "react-bootstrap";
 import { create } from "ipfs-http-client";

@@ -1,88 +1,102 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
-import { Buffer } from "buffer";
-import elliptic from "elliptic";
 import {
-  Container,
+  AppBar,
+  Toolbar,
+  Avatar,
   Typography,
+  Container,
   Box,
   Button,
-  TextField,
   Card,
   CardContent,
-  CardHeader,
   Grid,
   Alert,
   CircularProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  IconButton,
+  Drawer,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
-  Paper,
   Divider,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import MenuIcon from "@mui/icons-material/Menu";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import PendingIcon from "@mui/icons-material/Pending";
 import { contractABI } from "../../contractABI"; // Ensure this path is correct
 
-const EC = elliptic.ec;
-const ec = new EC("secp256k1"); // Same curve used by Ethereum
-
-const AdminPage = () => {
+const Admin = () => {
   // State Variables
-  const [userWeb3, setUserWeb3] = useState(null);
   const [adminWeb3, setAdminWeb3] = useState(null);
-  const [userAccount, setUserAccount] = useState(null);
   const [adminAccount, setAdminAccount] = useState(null);
-  const [publicKeyX, setPublicKeyX] = useState("");
-  const [username, setUsername] = useState("");
   const [adminRequests, setAdminRequests] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
-  const [message, setMessage] = useState("");
   const [alertMessage, setAlertMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [validationUsername, setValidationUsername] = useState("");
-  const [validationPassword, setValidationPassword] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const darkTheme = createTheme({
-    palette: {
-      mode: "dark",
-      primary: {
-        main: "#90caf9",
-      },
-      secondary: {
-        main: "#f48fb1",
-      },
-    },
-  });
+  const [adminContract, setAdminContract] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Network Configuration
   const CELO_ALFAJORES_CONFIG = {
-    chainId: "0x" + parseInt(44787).toString(16), // 44787 is the decimal chain ID for Alfajores
+    chainId: "0x" + parseInt(44787).toString(16),
     chainName: "Celo Alfajores Testnet",
     nativeCurrency: { name: "Celo", symbol: "CELO", decimals: 18 },
     rpcUrls: ["https://alfajores-forno.celo-testnet.org"],
     blockExplorerUrls: ["https://alfajores-blockscout.celo-testnet.org/"],
   };
 
-  // Contract Address (Replace with your deployed contract address)
-  const contractAddress = "0x25fAa6922F27B6eAb3E26E864225Bf1d0F8983A9";
-  console.log("hello :" + import.meta.env.VITE_TEST_VARIABLE); // Should output "Hello World"
+  // Contract Address
+  const contractAddress = "0x25fAa6922F27B6eAb3E26E866225Bf1d0F8983A9";
 
-  // Contract Instances
-  const [userContract, setUserContract] = useState(null);
-  const [adminContract, setAdminContract] = useState(null);
-  console.log("Contract Address:", import.meta.env.VITE_CONTRACT_ADDRESS);
+  // Theme
+  const theme = createTheme({
+    palette: {
+      mode: "light",
+      primary: {
+        main: "#1976d2",
+      },
+      secondary: {
+        main: "#dc004e",
+      },
+      background: {
+        default: "#f5f5f5",
+      },
+    },
+    typography: {
+      h1: {
+        fontSize: "2.2rem",
+        fontWeight: 500,
+      },
+      h2: {
+        fontSize: "1.8rem",
+        fontWeight: 500,
+      },
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: "none",
+          },
+        },
+      },
+    },
+  });
 
-  // Initialize Contract Instances
+  // Effect Hooks
   useEffect(() => {
-    if (userWeb3) {
-      const contractInstance = new userWeb3.eth.Contract(
-        contractABI,
-        contractAddress
-      );
-      setUserContract(contractInstance);
-    }
     if (adminWeb3) {
       const contractInstance = new adminWeb3.eth.Contract(
         contractABI,
@@ -90,16 +104,14 @@ const AdminPage = () => {
       );
       setAdminContract(contractInstance);
     }
-  }, [userWeb3, adminWeb3]);
+  }, [adminWeb3]);
 
-  // Load Registration Requests from Local Storage
   useEffect(() => {
     const storedRequests =
       JSON.parse(localStorage.getItem("registrationRequests")) || [];
     setAdminRequests(storedRequests);
   }, []);
 
-  // Listen to Registration Requests in Local Storage
   useEffect(() => {
     const handleStorageChange = (event) => {
       if (event.key === "registrationRequests") {
@@ -112,63 +124,7 @@ const AdminPage = () => {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // User: Connect Coinbase Wallet
-  const connectUserCoinbaseWallet = async () => {
-    let provider;
-
-    if (window.ethereum?.isCoinbaseWallet) {
-      provider = window.ethereum;
-    } else if (window.coinbaseWalletExtension) {
-      provider = window.coinbaseWalletExtension;
-    } else if (window.ethereum?.providers) {
-      provider = window.ethereum.providers.find((p) => p.isCoinbaseWallet);
-    }
-
-    if (provider) {
-      try {
-        await provider.request({ method: "eth_requestAccounts" });
-
-        // Switch to Celo Alfajores network
-        try {
-          await provider.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: CELO_ALFAJORES_CONFIG.chainId }],
-          });
-        } catch (switchError) {
-          // This error code indicates that the chain has not been added to Coinbase Wallet.
-          if (switchError.code === 4902) {
-            try {
-              await provider.request({
-                method: "wallet_addEthereumChain",
-                params: [CELO_ALFAJORES_CONFIG],
-              });
-            } catch (addError) {
-              throw new Error("Failed to add Celo Alfajores network.");
-            }
-          } else {
-            throw new Error("Failed to switch to Celo Alfajores network.");
-          }
-        }
-
-        const web3Instance = new Web3(provider);
-        setUserWeb3(web3Instance);
-
-        const accounts = await web3Instance.eth.getAccounts();
-        setUserAccount(accounts[0]);
-
-        setAlertMessage("User Coinbase Wallet Connected to Celo Alfajores!");
-      } catch (error) {
-        console.error("Connection error", error);
-        setAlertMessage(`Error: ${error.message}`);
-      }
-    } else {
-      setAlertMessage(
-        "Coinbase Wallet not detected. Please install the Coinbase Wallet extension or use the Coinbase Wallet mobile app."
-      );
-    }
-  };
-
-  // Admin: Connect MetaMask
+  // Functions
   const connectAdminMetaMask = async () => {
     if (typeof window.ethereum !== "undefined") {
       let metamaskProvider;
@@ -183,10 +139,8 @@ const AdminPage = () => {
 
       if (metamaskProvider) {
         try {
-          // Request account access
           await metamaskProvider.request({ method: "eth_requestAccounts" });
 
-          // Switch to Celo Alfajores network
           try {
             await metamaskProvider.request({
               method: "wallet_switchEthereumChain",
@@ -194,7 +148,6 @@ const AdminPage = () => {
             });
           } catch (switchError) {
             if (switchError.code === 4902) {
-              // Chain not added, add it
               await metamaskProvider.request({
                 method: "wallet_addEthereumChain",
                 params: [CELO_ALFAJORES_CONFIG],
@@ -227,50 +180,6 @@ const AdminPage = () => {
     }
   };
 
-  // User: Generate Key Pair
-  const generateKeyPair = () => {
-    const keyPair = ec.genKeyPair();
-    const pubKeyX = keyPair.getPublic().getX().toString(16).padStart(64, "0");
-    setPublicKeyX(pubKeyX);
-    // Do NOT store or display the private key
-    setAlertMessage("Key pair generated successfully!");
-  };
-
-  // User: Submit Registration Request
-  const submitRegistrationRequest = () => {
-    if (publicKeyX && userAccount && username) {
-      const newRequest = {
-        username: username,
-        publicKey: "0x" + publicKeyX,
-        userAddress: userAccount,
-        approved: false,
-      };
-
-      // Retrieve existing requests from local storage
-      const existingRequests =
-        JSON.parse(localStorage.getItem("registrationRequests")) || [];
-
-      // Add new request
-      const updatedRequests = [...existingRequests, newRequest];
-
-      // Save back to local storage
-      localStorage.setItem(
-        "registrationRequests",
-        JSON.stringify(updatedRequests)
-      );
-
-      setAdminRequests(updatedRequests);
-      setAlertMessage("Registration request sent to Admin for approval!");
-
-      // Reset user inputs
-      setUsername("");
-      setPublicKeyX("");
-    } else {
-      setAlertMessage("Error: Please provide all required information.");
-    }
-  };
-
-  // Admin: Approve Registration
   const approveRegistration = async (requestIndex, userAddress, publicKey) => {
     if (!adminAccount) {
       setAlertMessage("Error: Admin must connect MetaMask.");
@@ -286,7 +195,6 @@ const AdminPage = () => {
       setLoading(true);
       setAlertMessage(`Approving registration for ${userAddress}...`);
 
-      // Ensure publicKey is a valid bytes32
       let publicKeyBytes32 = publicKey.startsWith("0x")
         ? publicKey
         : "0x" + publicKey;
@@ -294,7 +202,6 @@ const AdminPage = () => {
         throw new Error("Invalid public key length.");
       }
 
-      // Estimate gas for the transaction
       let gasEstimate;
       try {
         gasEstimate = await adminContract.methods
@@ -307,20 +214,14 @@ const AdminPage = () => {
         return;
       }
 
-      // Function to calculate gas limit with an extra 20%
       const calculateGasLimit = (estimate) => {
-        if (typeof estimate === "bigint") {
-          // Use BigInt arithmetic
-          return ((estimate * 120n) / 100n).toString();
-        } else {
-          // Use Number arithmetic
-          return Math.floor(estimate * 1.2);
-        }
+        return typeof estimate === "bigint"
+          ? ((estimate * 120n) / 100n).toString()
+          : Math.floor(estimate * 1.2);
       };
 
       const gasLimit = calculateGasLimit(gasEstimate);
 
-      // Approve the user registration on-chain
       const result = await adminContract.methods
         .registerUser(userAddress, publicKeyBytes32)
         .send({
@@ -332,7 +233,6 @@ const AdminPage = () => {
 
       setAlertMessage(`Registration approved for ${userAddress}!`);
 
-      // Update local storage to mark as approved
       const existingRequests =
         JSON.parse(localStorage.getItem("registrationRequests")) || [];
       existingRequests[requestIndex].approved = true;
@@ -352,335 +252,157 @@ const AdminPage = () => {
     }
   };
 
-  // User: Validate Signature Off-Chain
-  const validateSignatureOffChain = async (message) => {
-    if (!userWeb3 || !userAccount) {
-      setAlertMessage(
-        "Error: Connect Coinbase Wallet and generate keys first."
-      );
-      return;
-    }
-    try {
-      setLoading(true);
-
-      // Create a simple message to sign
-      const msgParams = `0x${Buffer.from(message, "utf8").toString("hex")}`;
-
-      // Send the signature request
-      const signature = await userWeb3.eth.personal.sign(
-        msgParams,
-        userAccount,
-        ""
-      );
-
-      console.log("Signature:", signature);
-
-      // Verify the signature
-      const recoveredAddress = await userWeb3.eth.personal.ecRecover(
-        msgParams,
-        signature
-      );
-
-      console.log("Recovered Address:", recoveredAddress);
-      console.log("User Account:", userAccount);
-
-      if (recoveredAddress.toLowerCase() === userAccount.toLowerCase()) {
-        setAlertMessage("Signature is valid!");
-      } else {
-        setAlertMessage("Signature is invalid.");
-      }
-    } catch (error) {
-      console.error("Error validating signature off-chain:", error);
-      setAlertMessage(
-        `Error: ${error.message || "Off-chain validation failed."}`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // User: Fetch Audit Logs
-  const getAuditLogs = async () => {
-    if (!userWeb3 || !userAccount) {
-      setAlertMessage("Error: Connect Coinbase Wallet first.");
-      return;
-    }
-    if (!userContract) {
-      setAlertMessage("Error: Contract instance not available.");
-      return;
-    }
-    try {
-      setLoading(true);
-      const logs = await userContract.getPastEvents("UserRegistered", {
-        filter: { user: userAccount },
-        fromBlock: 0,
-        toBlock: "latest",
-      });
-      setAuditLogs(logs);
-      setAlertMessage("Audit logs fetched successfully.");
-    } catch (error) {
-      console.error("Error fetching audit logs:", error.message);
-      setAlertMessage("Error: Could not fetch audit logs.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // UI Render
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container maxWidth="lg">
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h3" component="h1" align="center" gutterBottom>
-            🔐 Blockchain Authenticator Demo
-          </Typography>
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={() => setDrawerOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
 
-          {alertMessage && (
-            <Alert severity="info" sx={{ mb: 2 }}>
-              {alertMessage}
-            </Alert>
-          )}
-
-          {/* Part 1: User Registration */}
-          <Card sx={{ mb: 4 }}>
-            <CardHeader
-              title="👤 User Registration (Coinbase Wallet)"
-              sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}
-            />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Username"
-                    variant="outlined"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    onClick={connectUserCoinbaseWallet}
-                  >
-                    🔗 Connect Coinbase Wallet
-                  </Button>
-                </Grid>
-                {userAccount && (
-                  <Grid item xs={12}>
-                    <Alert severity="success">
-                      Connected Account: {userAccount}
-                    </Alert>
-                  </Grid>
-                )}
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                    onClick={generateKeyPair}
-                  >
-                    🔑 Generate Key Pair
-                  </Button>
-                </Grid>
-                {publicKeyX && (
-                  <Grid item xs={12}>
-                    <Alert severity="warning">
-                      <strong>Public Key:</strong>{" "}
-                      <span style={{ wordBreak: "break-all" }}>
-                        0x{publicKeyX}
-                      </span>
-                    </Alert>
-                  </Grid>
-                )}
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    onClick={submitRegistrationRequest}
-                    disabled={
-                      !publicKeyX || !userAccount || !username || loading
-                    }
-                  >
-                    {loading ? (
-                      <CircularProgress size={24} />
-                    ) : (
-                      "📝 Register Public Key"
-                    )}
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-
-          {/* Part 2: Validation */}
-          <Card sx={{ mb: 4 }}>
-            <CardHeader
-              title="✅ User Validation"
-              sx={{
-                bgcolor: "secondary.main",
-                color: "secondary.contrastText",
-              }}
-            />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Username"
-                    variant="outlined"
-                    value={validationUsername}
-                    onChange={(e) => setValidationUsername(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Password"
-                    type="password"
-                    variant="outlined"
-                    value={validationPassword}
-                    onChange={(e) => setValidationPassword(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="3rd Factor Authentication "
-                    variant="outlined"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                    onClick={() => validateSignatureOffChain(message)}
-                    disabled={loading || !message}
-                  >
-                    {loading ? (
-                      <CircularProgress size={24} />
-                    ) : (
-                      "Validate Signature"
-                    )}
-                  </Button>
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    fullWidth
-                    onClick={getAuditLogs}
-                  >
-                    📋 Get Audit Logs
-                  </Button>
-                </Grid>
-                {auditLogs.length > 0 && (
-                  <Grid item xs={12}>
-                    <Paper elevation={2} sx={{ p: 2 }}>
-                      <Typography variant="h6">Audit Logs</Typography>
-                      <List>
-                        {auditLogs.map((log, index) => (
-                          <ListItem key={index}>
-                            <ListItemText
-                              primary={`User: ${log.returnValues.user}`}
-                              secondary={`Public Key: ${log.returnValues.publicKey}`}
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Paper>
-                  </Grid>
-                )}
-              </Grid>
-            </CardContent>
-          </Card>
-
-          {/* Admin Panel */}
-          <Card>
-            <CardHeader
-              title="🛡️ Admin Panel (MetaMask)"
-              sx={{ bgcolor: "success.main", color: "success.contrastText" }}
-            />
-            <CardContent>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    onClick={connectAdminMetaMask}
-                  >
-                    🔗 Connect MetaMask
-                  </Button>
-                </Grid>
-                {adminAccount && (
-                  <Grid item xs={12}>
-                    <Alert severity="success">
-                      Admin Account: {adminAccount}
-                    </Alert>
-                  </Grid>
-                )}
-                <Grid item xs={12}>
-                  <Typography variant="h5" gutterBottom>
-                    Registration Requests
-                  </Typography>
-                  {adminRequests.length === 0 ? (
-                    <Alert severity="info">No pending requests.</Alert>
-                  ) : (
-                    adminRequests.map((request, index) => (
-                      <Paper key={index} elevation={2} sx={{ p: 2, mb: 2 }}>
-                        <Typography variant="h6">{request.username}</Typography>
-                        <Typography variant="body2" gutterBottom>
-                          <strong>Public Key:</strong>{" "}
-                          <span style={{ wordBreak: "break-all" }}>
-                            {request.publicKey}
-                          </span>
-                        </Typography>
-                        <Typography variant="body2" gutterBottom>
-                          <strong>User Address:</strong> {request.userAddress}
-                        </Typography>
-                        {request.approved ? (
-                          <Alert severity="success" sx={{ mt: 1 }}>
-                            Approved
-                          </Alert>
-                        ) : (
-                          <Button
-                            variant="contained"
-                            color="success"
-                            onClick={() =>
-                              approveRegistration(
-                                index,
-                                request.userAddress,
-                                request.publicKey
-                              )
-                            }
-                            disabled={loading}
-                            sx={{ mt: 1 }}
-                          >
-                            {loading ? (
-                              <CircularProgress size={24} />
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Admin Dashboard
+            </Typography>
+            {adminAccount ? (
+              <Chip
+                label={`Connected: ${adminAccount.slice(
+                  0,
+                  6
+                )}...${adminAccount.slice(-4)}`}
+                color="secondary"
+              />
+            ) : (
+              <Button color="inherit" onClick={connectAdminMetaMask}>
+                Connect MetaMask
+              </Button>
+            )}
+            <Avatar src="/broken-image.jpg" />
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          anchor="left"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        >
+          <List>
+            <ListItem button>
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary="Dashboard" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <PersonAddIcon />
+              </ListItemIcon>
+              <ListItemText primary="Registration Requests" />
+            </ListItem>
+          </List>
+        </Drawer>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              {alertMessage && (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  {alertMessage}
+                </Alert>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+                <Typography
+                  component="h2"
+                  variant="h6"
+                  color="primary"
+                  gutterBottom
+                >
+                  Registration Requests
+                </Typography>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Username</TableCell>
+                        <TableCell>User Address</TableCell>
+                        <TableCell>Public Key</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Action</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {adminRequests.map((request, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{request.username}</TableCell>
+                          <TableCell>{request.userAddress}</TableCell>
+                          <TableCell>
+                            <Typography
+                              variant="body2"
+                              style={{ wordBreak: "break-all" }}
+                            >
+                              {request.publicKey.slice(0, 15)}...
+                              {request.publicKey.slice(-15)}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            {request.approved ? (
+                              <Chip
+                                icon={<CheckCircleIcon />}
+                                label="Approved"
+                                color="success"
+                              />
                             ) : (
-                              "Approve"
+                              <Chip
+                                icon={<PendingIcon />}
+                                label="Pending"
+                                color="warning"
+                              />
                             )}
-                          </Button>
-                        )}
-                      </Paper>
-                    ))
-                  )}
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Box>
-      </Container>
+                          </TableCell>
+                          <TableCell>
+                            {!request.approved && (
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                onClick={() =>
+                                  approveRegistration(
+                                    index,
+                                    request.userAddress,
+                                    request.publicKey
+                                  )
+                                }
+                                disabled={loading}
+                              >
+                                {loading ? (
+                                  <CircularProgress size={24} />
+                                ) : (
+                                  "Approve"
+                                )}
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
     </ThemeProvider>
   );
 };
 
-export default AdminPage;
+export default Admin;

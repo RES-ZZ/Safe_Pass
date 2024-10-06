@@ -2,6 +2,7 @@
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { useState } from "react";
+import "./main.css";
 import Home from "./pages/Home";
 import Documentation from "./pages/Documentation";
 import About from "./pages/About/index";
@@ -13,10 +14,12 @@ import Quick from "./components/quick";
 import Tech from "./components/tech";
 import Footer from "./components/Footer"; // Import the new Footer component
 import RegistrationPage from "./pages/Solution/Register";
-import AdminPage from "./pages/Solution/Admin";
+import Admin from "./pages/Solution/Admin";
 import Chat from "./pages/Solution/Chat";
-import FileUploader from "./components/FileUploader";
-import FileViewer from "./components/FileViewer";
+import User from "./File Transfer/User";
+import ThreeFa from "./pages/Solution/ThreeFa";
+// import FileUploader from "./components/FileUploader";
+// import FileViewer from "./components/FileViewer";
 
 function App() {
   const [contractAddress] = useState(
@@ -41,7 +44,10 @@ function App() {
             <Route path="/tech" element={<Tech />} />
             <Route path="/demo" element={<Demo />} />
             <Route path="/register" element={<RegistrationPage />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/user" element={<User />} />
+            <Route path="/three-fa" element={<ThreeFa />} />
+
             <Route
               path="/chat"
               element={<Chat contractAddress={contractAddress} />}

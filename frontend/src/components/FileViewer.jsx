@@ -1,6 +1,6 @@
 // src/components/FileViewer.jsx
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Alert, ListGroup } from "react-bootstrap";
 import { getFilesForUser } from "../utils/contract"; // Ensure this path is correct
 import ipfs from "../utils/ipfs"; // Ensure this path is correct

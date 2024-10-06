@@ -1,6 +1,6 @@
 // src/components/FileUploader.jsx
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import ipfs from "../utils/ipfs"; // Ensure this path is correct
 import { sendFile } from "../utils/contract"; // Ensure this path is correct

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Web3 from "web3";
 import elliptic from "elliptic";
+import { Buffer } from "buffer";
 import {
   Button,
   Container,
@@ -116,7 +117,7 @@ const Demo = () => {
                 method: "wallet_addEthereumChain",
                 params: [CELO_ALFAJORES_CONFIG],
               });
-            } catch (addError) {
+            } catch {
               throw new Error("Failed to add Celo Alfajores network.");
             }
           } else {
