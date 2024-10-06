@@ -427,7 +427,14 @@ const Admin = () => {
                 <Card>
                   <CardContent>
                     <Typography variant="h2">Overview</Typography>
-                    {/* Your Overview content here */}
+                    <button
+                      onClick={() => {
+                        window.location.href = "/overview";
+                      }}
+                      className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Open Overview UI
+                    </button>
                   </CardContent>
                 </Card>
               )}
@@ -519,9 +526,9 @@ const Admin = () => {
                     >
                       <CardContent>
                         <Typography variant="h5" gutterBottom>
-                          Total Users
+                          Scalability
                         </Typography>
-                        <Typography variant="h3">1,234</Typography>
+                        <Typography variant="h3">Unlimted Request</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -536,7 +543,7 @@ const Admin = () => {
                         <Typography variant="h5" gutterBottom>
                           Active Users
                         </Typography>
-                        <Typography variant="h3">567</Typography>
+                        <Typography variant="h3">..........</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -551,7 +558,9 @@ const Admin = () => {
                         <Typography variant="h5" gutterBottom>
                           Price per User
                         </Typography>
-                        <Typography variant="h3">$21.75</Typography>
+                        <Typography variant="h5">
+                          .......Under 1 paise
+                        </Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -564,9 +573,9 @@ const Admin = () => {
                     >
                       <CardContent>
                         <Typography variant="h5" gutterBottom>
-                          Monthly Revenue
+                          Total Request Incured
                         </Typography>
-                        <Typography variant="h3">$12,345</Typography>
+                        <Typography variant="h3">....</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -579,9 +588,9 @@ const Admin = () => {
                     >
                       <CardContent>
                         <Typography variant="h5" gutterBottom>
-                          Total Sessions
+                          Pending Request
                         </Typography>
-                        <Typography variant="h3">8,765</Typography>
+                        <Typography variant="h3">.....</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -594,9 +603,9 @@ const Admin = () => {
                     >
                       <CardContent>
                         <Typography variant="h5" gutterBottom>
-                          Bounce Rate
+                          Subscription Plan
                         </Typography>
-                        <Typography variant="h3">25%</Typography>
+                        <Typography variant="h3">.....</Typography>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -638,10 +647,82 @@ const Admin = () => {
                 </Grid>
               )}
               {selectedSection === "Recovery" && (
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2">Recovery</Typography>
-                    {/* Your Recovery content here */}
+                <Card className="bg-gray-900 text-white shadow-lg">
+                  <CardContent className="p-8">
+                    <Typography
+                      variant="h2"
+                      className="text-5xl font-bold text-white mb-8"
+                    >
+                      Recovery
+                    </Typography>
+                    <div className="bg-gray-800 p-6 rounded-xl">
+                      <Typography
+                        variant="body1"
+                        className="text-xl text-gray-400 leading-8"
+                      >
+                        Imagine this: It&apos;s a stormy night, rain splattering
+                        against your window, and you realize you&apos;ve lost
+                        access to your digital wallet. A feeling of panic sets
+                        in as you envision your assets locked away, potentially
+                        lost forever. But all hope is not gone.
+                      </Typography>
+                      <div className="my-8">
+                        <Typography
+                          variant="body1"
+                          className="text-xl text-gray-400 leading-8"
+                        >
+                          With our carefully crafted{" "}
+                          <span className="text-blue-500 hover:text-blue-600">
+                            Recovery Mechanism
+                          </span>
+                          , your private and public keys are not lost in the
+                          void. We guide you step-by-step to regain what you
+                          thought was lost. Picture an encrypted vault, shrouded
+                          in mist, but always accessible for those determined to
+                          find it.
+                        </Typography>
+                      </div>
+                      <Typography
+                        variant="body1"
+                        className="text-xl text-gray-400 leading-8"
+                      >
+                        When you{" "}
+                        <span className="text-blue-500 hover:text-blue-600 cursor-pointer">
+                          start the recovery process
+                        </span>
+                        , you'll face a series of challenges to verify your
+                        identity. One step at a time, you&apos;ll prove your
+                        authenticity,{" "}
+                        <span className="text-blue-500 hover:text-blue-600">
+                          recover your keys
+                        </span>
+                        , and reclaim control. The interface takes you on a
+                        journey — as you unlock each question, the dark theme
+                        transforms with subtle, glowing hints of vibrant colors.
+                      </Typography>
+                      <div className="my-8">
+                        <Typography
+                          variant="body1"
+                          className="text-xl text-gray-400 leading-8"
+                        >
+                          <span className="text-blue-500 hover:text-blue-600">
+                            Hints
+                          </span>{" "}
+                          light up the way, like guiding beacons in the night,
+                          ensuring each step feels manageable. This is your
+                          recovery journey, designed for those who&apos;ve lost
+                          the key, but not the determination to unlock it.
+                        </Typography>
+                      </div>
+                      <Typography
+                        variant="body1"
+                        className="text-xl text-gray-400 leading-8"
+                      >
+                        At last, the labyrinth opens up, your key is reclaimed,
+                        and safety is restored. The blue glow shifts into a
+                        gentle pulse, symbolizing your triumph over the chaos.
+                      </Typography>
+                    </div>
                   </CardContent>
                 </Card>
               )}
