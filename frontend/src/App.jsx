@@ -17,7 +17,13 @@ import RegistrationPage from "./pages/Solution/Register";
 import Admin from "./pages/Solution/Admin";
 import Chat from "./pages/Solution/Chat";
 import User from "./File Transfer/User";
+import Overview from "./pages/Solution/Overview";
 import ThreeFa from "./pages/Solution/ThreeFa";
+import Analytics from "./pages/Solution/Analytics";
+import Sidebar1 from "./components/Sidebar1";
+import Layout from "./pages/Solution/Layout";
+import Navbar from "./components/Navbar";
+import RegistrationRequests from "./pages/Solution/RegistrationRequests";
 // import FileUploader from "./components/FileUploader";
 // import FileViewer from "./components/FileViewer";
 
@@ -47,6 +53,15 @@ function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/user" element={<User />} />
             <Route path="/three-fa" element={<ThreeFa />} />
+            <Route path="/navbar" element={<Navbar />} />
+            <Route
+              path="/registration-requests"
+              element={<RegistrationRequests />}
+            />
+            <Route path="/layout" element={<Layout />} />
+            <Route path="/overview" element={<Overview />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/sidebar1" element={<Sidebar1 />} />
 
             <Route
               path="/chat"
