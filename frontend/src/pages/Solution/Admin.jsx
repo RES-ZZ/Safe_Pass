@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Web3 from "web3";
 import {
   AppBar,
@@ -8,18 +8,8 @@ import {
   Container,
   Box,
   Button,
-  Card,
-  CardContent,
-  Grid,
   Alert,
   CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Chip,
   IconButton,
   Drawer,
@@ -27,15 +17,15 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Divider,
+  TextField,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import MenuIcon from "@mui/icons-material/Menu";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PendingIcon from "@mui/icons-material/Pending";
 import { contractABI } from "../../contractABI"; // Ensure this path is correct
+import Overview from './Overview'; // Adjust the path if necessary
 
 const Admin = () => {
   // State Variables
@@ -46,7 +36,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [adminContract, setAdminContract] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedSection, setSelectedSection] = useState("Overview"); // State for selected section
+  const [selectedSection, setSelectedSection] = useState('Overview');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Network Configuration
   const CELO_ALFAJORES_CONFIG = {
@@ -252,10 +243,13 @@ const Admin = () => {
     }
   };
 
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
   // UI Render
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar>
@@ -275,10 +269,7 @@ const Admin = () => {
             </Typography>
             {adminAccount ? (
               <Chip
-                label={`Connected: ${adminAccount.slice(
-                  0,
-                  6
-                )}...${adminAccount.slice(-4)}`}
+                label={`Connected: ${adminAccount.slice(0, 6)}...${adminAccount.slice(-4)}`}
                 color="secondary"
               />
             ) : (
@@ -286,14 +277,10 @@ const Admin = () => {
                 Connect MetaMask
               </Button>
             )}
-            <Avatar src="/broken-image.jpg" />
           </Toolbar>
         </AppBar>
-        <Drawer
-          anchor="left"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-        >
+
+        <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
           <List>
             <ListItem button onClick={() => { setSelectedSection('Overview'); setDrawerOpen(false); }}>
               <ListItemIcon>
@@ -301,143 +288,39 @@ const Admin = () => {
               </ListItemIcon>
               <ListItemText primary="Overview" />
             </ListItem>
-            <ListItem button onClick={() => { setSelectedSection('Search'); setDrawerOpen(false); }}>
-              <ListItemIcon>
-                <PersonAddIcon />
-              </ListItemIcon>
-              <ListItemText primary="Search" />
-            </ListItem>
             <ListItem button onClick={() => { setSelectedSection('Profile'); setDrawerOpen(false); }}>
               <ListItemIcon>
                 <PersonAddIcon />
               </ListItemIcon>
               <ListItemText primary="Profile" />
             </ListItem>
-            <ListItem button onClick={() => { setSelectedSection('Registration'); setDrawerOpen(false); }}>
-              <ListItemIcon>
-                <PersonAddIcon />
-              </ListItemIcon>
-              <ListItemText primary="Registration" />
-            </ListItem>
-            <ListItem button onClick={() => { setSelectedSection('Analytics'); setDrawerOpen(false); }}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Analytics" />
-            </ListItem>
-            <ListItem button onClick={() => { setSelectedSection('Recovery'); setDrawerOpen(false); }}>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Recovery" />
-            </ListItem>
           </List>
+          <Divider />
         </Drawer>
-        <Container>
+
+        <Container sx={{ mt: 3 }}>
           {alertMessage && (
-            <Alert severity="info" onClose={() => setAlertMessage(null)}>
+            <Alert onClose={() => setAlertMessage(null)} severity={loading ? "info" : "success"}>
               {alertMessage}
             </Alert>
           )}
-          <Grid container spacing={3} style={{ marginTop: "20px" }}>
-            <Grid item xs={12}>
-              {loading && <CircularProgress />}
-              {selectedSection === "Overview" && (
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2">Overview</Typography>
-                    {/* Your Overview content here */}
-                  </CardContent>
-                </Card>
-              )}
-              {selectedSection === "Search" && (
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2">Search</Typography>
-                    {/* Your Search content here */}
-                  </CardContent>
-                </Card>
-              )}
-              {selectedSection === "Profile" && (
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2">Profile</Typography>
-                    {/* Your Profile content here */}
-                  </CardContent>
-                </Card>
-              )}
-              {selectedSection === "Registration" && (
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2">Registration Requests</Typography>
-                    <TableContainer component={Paper}>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>User Address</TableCell>
-                            <TableCell>Public Key</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Action</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {adminRequests.map((request, index) => (
-                            <TableRow key={index}>
-                              <TableCell>{request.userAddress}</TableCell>
-                              <TableCell>{request.publicKey}</TableCell>
-                              <TableCell>
-                                {request.approved ? (
-                                  <Chip
-                                    label="Approved"
-                                    color="success"
-                                    icon={<CheckCircleIcon />}
-                                  />
-                                ) : (
-                                  <Chip label="Pending" color="warning" icon={<PendingIcon />} />
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                {!request.approved && (
-                                  <Button
-                                    variant="contained"
-                                    onClick={() =>
-                                      approveRegistration(
-                                        index,
-                                        request.userAddress,
-                                        request.publicKey
-                                      )
-                                    }
-                                  >
-                                    Approve
-                                  </Button>
-                                )}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </CardContent>
-                </Card>
-              )}
-              {selectedSection === "Analytics" && (
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2">Analytics</Typography>
-                    {/* Your Analytics content here */}
-                  </CardContent>
-                </Card>
-              )}
-              {selectedSection === "Recovery" && (
-                <Card>
-                  <CardContent>
-                    <Typography variant="h2">Recovery</Typography>
-                    {/* Your Recovery content here */}
-                  </CardContent>
-                </Card>
-              )}
-            </Grid>
-          </Grid>
+
+          <Box>
+            {loading ? (
+              <CircularProgress />
+            ) : adminRequests.length === 0 ? (
+              <Typography variant="h6">No registration requests available.</Typography>
+            ) : selectedSection === 'Overview' ? (
+              <Overview 
+                adminRequests={adminRequests} 
+                approveRegistration={approveRegistration} 
+                searchQuery={searchQuery} 
+                handleSearch={handleSearch}
+              />
+            ) : (
+              <Typography variant="h4">Profile Section (to be implemented)</Typography>
+            )}
+          </Box>
         </Container>
       </Box>
     </ThemeProvider>
