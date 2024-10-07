@@ -56,9 +56,9 @@ const Overview = () => {
         {/* User Details */}
         <div className="col-span-1 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
           <h3 className="text-lg font-semibold">User Details</h3>
-          <p className="mt-2">Name: John Doe</p>
-          <p className="mt-2">Email: john.doe@example.com</p>
-          <p className="mt-2">Role: Admin</p>
+          Ram Kumar
+          <p className="mt-2">Email: Ramkumar@143gmail.com</p>
+          <p className="mt-2">Role: User</p>
           {/* Add more user details here */}
         </div>
 
