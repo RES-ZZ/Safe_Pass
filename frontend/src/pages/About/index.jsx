@@ -34,18 +34,13 @@ const About = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // Replace with your deployed contract address
+  // Replace with your deployed contract address and ABI
   const contractAddress = "0x25fAa6922F27B6eAb3E26E864225Bf1d0F8983A9";
   const contractABI = [
     {
       anonymous: false,
       inputs: [
-        {
-          indexed: false,
-          internalType: "string",
-          name: "username",
-          type: "string",
-        },
+        { indexed: false, internalType: "string", name: "username", type: "string" },
       ],
       name: "UserRegistered",
       type: "event",
@@ -53,34 +48,16 @@ const About = () => {
     {
       anonymous: false,
       inputs: [
-        {
-          indexed: false,
-          internalType: "string",
-          name: "username",
-          type: "string",
-        },
-        {
-          indexed: false,
-          internalType: "bool",
-          name: "success",
-          type: "bool",
-        },
+        { indexed: false, internalType: "string", name: "username", type: "string" },
+        { indexed: false, internalType: "bool", name: "success", type: "bool" },
       ],
       name: "UserValidated",
       type: "event",
     },
     {
       inputs: [
-        {
-          internalType: "string",
-          name: "username",
-          type: "string",
-        },
-        {
-          internalType: "bytes32",
-          name: "passwordHash",
-          type: "bytes32",
-        },
+        { internalType: "string", name: "username", type: "string" },
+        { internalType: "bytes32", name: "passwordHash", type: "bytes32" },
       ],
       name: "registerUser",
       outputs: [],
@@ -89,30 +66,17 @@ const About = () => {
     },
     {
       inputs: [
-        {
-          internalType: "string",
-          name: "username",
-          type: "string",
-        },
-        {
-          internalType: "bytes32",
-          name: "passwordHash",
-          type: "bytes32",
-        },
+        { internalType: "string", name: "username", type: "string" },
+        { internalType: "bytes32", name: "passwordHash", type: "bytes32" },
       ],
       name: "validateUser",
-      outputs: [
-        {
-          internalType: "bool",
-          name: "",
-          type: "bool",
-        },
-      ],
+      outputs: [{ internalType: "bool", name: "", type: "bool" }],
       stateMutability: "view",
       type: "function",
     },
   ];
 
+  // Connect MetaMask and set up Web3 and contract
   const connectMetaMask = async () => {
     if (window.ethereum && window.ethereum.isMetaMask) {
       try {
@@ -123,10 +87,7 @@ const About = () => {
         const accounts = await web3Instance.eth.getAccounts();
         setAccount(accounts[0]);
 
-        const contractInstance = new web3Instance.eth.Contract(
-          contractABI,
-          contractAddress
-        );
+        const contractInstance = new web3Instance.eth.Contract(contractABI, contractAddress);
         setContract(contractInstance);
         setAlertMessage("MetaMask Connected!");
       } catch (error) {
@@ -138,6 +99,7 @@ const About = () => {
     }
   };
 
+  // Register user on-chain
   const registerUser = async () => {
     if (contract && web3 && username && password) {
       try {
@@ -150,33 +112,28 @@ const About = () => {
           });
         setAlertMessage("User registered successfully!");
       } catch (error) {
-        console.error("Error registering user:", error.message);
+        console.error("Error registering user:", error);
         setAlertMessage("Error: Failed to register user.");
       }
     } else {
-      setAlertMessage(
-        "Please connect MetaMask and enter username and password."
-      );
+      setAlertMessage("Please connect MetaMask and enter username and password.");
     }
   };
 
+  // Validate user on-chain
   const validateOnChain = async () => {
     if (contract && web3 && username && password) {
       try {
         const isValid = await contract.methods
           .validateUser(username, web3.utils.sha3(password))
           .call();
-        setAlertMessage(
-          isValid ? "Validation successful!" : "Validation failed."
-        );
+        setAlertMessage(isValid ? "Validation successful!" : "Validation failed.");
       } catch (error) {
-        console.error("Error validating user:", error.message);
+        console.error("Error validating user:", error);
         setAlertMessage("Error: Validation failed.");
       }
     } else {
-      setAlertMessage(
-        "Please connect MetaMask and enter username and password."
-      );
+      setAlertMessage("Please connect MetaMask and enter username and password.");
     }
   };
 
@@ -186,7 +143,7 @@ const About = () => {
       <Container maxWidth="sm">
         <Box sx={{ my: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom align="center">
-            Blockchain Authenticator
+            Blockchain Authenticator (MetaMask Only)
           </Typography>
 
           <Card sx={{ mb: 4 }}>

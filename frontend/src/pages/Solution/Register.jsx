@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { Buffer } from "buffer";
 import elliptic from "elliptic";
@@ -57,7 +57,7 @@ const RegistrationPage = () => {
 
   // Network Configuration
   const CELO_ALFAJORES_CONFIG = {
-    chainId: "0x" + parseInt(44787).toString(16), // 44787 is the decimal chain ID for Alfajores
+    chainId: "0xaef3",
     chainName: "Celo Alfajores Testnet",
     nativeCurrency: { name: "Celo", symbol: "CELO", decimals: 18 },
     rpcUrls: ["https://alfajores-forno.celo-testnet.org"],
@@ -141,7 +141,8 @@ const RegistrationPage = () => {
                 method: "wallet_addEthereumChain",
                 params: [CELO_ALFAJORES_CONFIG],
               });
-            } catch {
+            } catch (addError) {
+              console.error("Failed to add Celo Alfajores network.", addError);
               throw new Error("Failed to add Celo Alfajores network.");
             }
           } else {
